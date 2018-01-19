@@ -1,0 +1,5 @@
+string producer   # Name of logger
+int64 sid         # Sequence ID (0 if starting new session)
+uint8[] data      # Data to log
+---
+int64 sid         # Current or new sid

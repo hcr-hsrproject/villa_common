@@ -1,0 +1,112 @@
+#! /usr/bin/python
+from __future__ import print_function
+import rospy
+from sensor_msgs.msg import Image
+from cv_bridge import CvBridge, CvBridgeError
+import cv2
+import sys
+import tty, termios
+import os
+
+camera_topics = {"/hsrb/hand_camera/image_rect": "hand",
+    "/hsrb/head_center_camera/image_rect": "head_fish",
+    "/hsrb/head_l_stereo_camera/image_rect_color": "head_left",
+    "/hsrb/head_r_stereo_camera/image_rect_color": "head_right",
+    "/hsrb/head_rgbd_sensor/rgb/image_rect_color": "head_top"}
+
+
+capture_next = None
+output_directory = None
+# Instantiate CvBridge
+bridge = CvBridge()
+count = 0
+
+def getKey():
+    fd = sys.stdin.fileno()
+    tty.setraw(fd)
+    key = sys.stdin.read(1)
+    termios.tcsetattr(sys.stdin, termios.TCSADRAIN, original_settings)
+    return key
+
+def image_callback(msg):
+    if capture_next is None:
+        return
+    topic = msg._connection_header["topic"]
+    if not topic in capture_next:
+        return
+    capture_next.remove(topic)
+    try:
+        if msg.encoding in ["rgb8", "bgr8", "yuv422"]:
+            cv2_img = bridge.imgmsg_to_cv2(msg, "bgr8")
+        elif msg.encoding == "16UC1":
+            # An Xtion specific issue requires us to manually override the encoding here.
+            # See https://gist.github.com/awesomebytes/30bf7eae3a90754f82502accd02cbb12
+            msg.encoding = "mono16"
+            cv2_img = bridge.imgmsg_to_cv2(msg, "mono8")
+        else:
+            raise Exception("Unsupported image encoding " + msg.encoding)
+    except CvBridgeError, e:
+        print(e)
+    else:
+        topic_head = camera_topics[topic]
+
+        file_name = make_filename(topic_head, count)
+
+        out_path = os.path.join(output_directory, file_name)
+        if os.path.isfile(out_path):
+            print("Trying to save {} image already exists. Please clean out the folder.".format(out_path))
+            exit(1)
+        cv2.imwrite(out_path, cv2_img)
+
+
+def get_next_free_index(path, prefixes):
+    next_free = []
+
+    all_contents = os.listdir(path)
+    onlyfiles = [f for f in all_contents if os.path.isfile(os.path.join(path, f))]
+    for prefix in prefixes:
+        only_with_prefix = [f for f in onlyfiles if f.startswith(prefix)]
+        # Strip out the prefix, then split on the "." and take what's before the dot.
+        # Should be just the number
+        file_numbers = [int(f.replace(prefix, "").split(".")[0]) for f in only_with_prefix]
+        if len(file_numbers) == 0:
+            next_free.append(0)
+        else:
+            next_free.append(max(file_numbers) + 1)
+    return max(next_free)
+
+
+def make_filename(prefix, count):
+    return "{}{}.png".format(prefix, count)
+
+if __name__ == '__main__':
+    original_settings = termios.tcgetattr(sys.stdin)
+    rospy.init_node('capture_images')
+    output_directory = os.getcwd()
+    # If there are already images in this folder, let's find the next index
+    # that doesn't
+    count = get_next_free_index(output_directory, camera_topics.values())
+    for topic in camera_topics.keys():
+        rospy.Subscriber(topic, Image, image_callback)
+
+    print("Camera topics:")
+    for topic in camera_topics.keys():
+        print("  " + topic)
+    print("Output directory: {}".format(output_directory))
+    print("Press spacebar to capture")
+    while not rospy.is_shutdown():
+        key = getKey()
+        if key == " ":
+            # Set the list of topics we expect images from
+            capture_next = set(camera_topics.keys())
+            out_message = "Capturing batch {}...".format(count)
+            print(out_message)
+            # Wait for each callback to mark success
+            while len(capture_next) != 0 and not rospy.is_shutdown():
+                rospy.sleep(1)
+            print("Done. Press spacebar to capture")
+            count += 1
+        # Break on Control C
+        elif key == '\x03':
+            break
+    termios.tcsetattr(sys.stdin, termios.TCSADRAIN, original_settings)

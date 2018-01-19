@@ -1,0 +1,34 @@
+#!/usr/bin/env python
+import rospy
+import argparse
+import sys
+from tmc_msgs.msg import BatteryState
+
+keypath = None
+
+def callback(data):
+    current_object = data
+    for element in keypath:
+        current_object = current_object.__getattribute__(element)
+    print current_object
+    rospy.signal_shutdown("Successfully got message value")
+    
+def listener():
+
+    global keypath
+    rospy.init_node('get_message_value', anonymous=True)
+    
+    parser = argparse.ArgumentParser(description='Listen for a message and print a value.')
+    parser.add_argument('topic', type=str,
+                        help='the topic to listen to')
+    parser.add_argument('keypath', type=str, nargs='+',
+                        help='the key path to the value')
+
+    args = parser.parse_args()
+    keypath = args.keypath
+    rospy.Subscriber(args.topic, BatteryState, callback)
+
+    rospy.spin()
+
+if __name__ == '__main__':
+    listener()

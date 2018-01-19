@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package>
+  <name>villa_simulation</name>
+  <version>0.0.0</version>
+  <description>The villa_simulation package</description>
+
+  <maintainer email="nick@todo.todo">nick</maintainer>
+
+  <license>TODO</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+
+  <export>
+
+  </export>
+</package>

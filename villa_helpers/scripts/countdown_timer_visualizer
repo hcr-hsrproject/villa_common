@@ -1,0 +1,84 @@
+#!/usr/bin/env python
+import rospy
+import datetime
+import time
+from villa_helpers.srv import StartCountdown, StartCountdownResponse
+from visualization_msgs.msg import Marker, MarkerArray
+from std_msgs.msg import String
+from threading import Lock
+
+timers_lock = Lock()
+timers = {}
+
+def format_countdown(timedelta):
+    if timedelta.seconds == 0.0 and timedelta.microseconds == 0.0:
+        return "0:00:00:000"
+    return str(timedelta)[:-3]
+
+class CountdownTimer:
+    def __init__(self, start_stamp, duration, position, frame_id):
+        self.start_stamp = start_stamp
+        self.duration = duration
+        self.position = position
+        self.frame_id = frame_id
+
+    def get_marker(self):
+        time_left = self.start_stamp + self.duration - time.time()
+        marker = construct_marker(int(self.start_stamp), time_left, self.position, self.frame_id)
+        return marker
+
+    def finished(self):
+        time_left = self.start_stamp + self.duration - time.time()
+        return time_left < -10.0
+
+
+def construct_marker(timer_id, seconds_left, position, frame_id):
+    marker = Marker()
+    marker.header.frame_id = frame_id
+    marker.header.stamp = rospy.Time.now()
+    marker.type = Marker.TEXT_VIEW_FACING
+    marker.ns = 'countdown_labels'
+    marker.id = timer_id
+    marker.action = Marker.ADD
+    marker.pose.position.x = position.x
+    marker.pose.position.y = position.y
+    marker.pose.position.z = position.z
+    marker.pose.orientation.x = 0.
+    marker.pose.orientation.y = 0.
+    marker.pose.orientation.z = 0.
+    marker.pose.orientation.w = 1.
+    marker.lifetime = rospy.Duration(0.1)
+    marker.scale.z = 0.1
+    marker.text = format_countdown(datetime.timedelta(seconds=max(seconds_left, 0.0)))
+    marker.color.r = 0.
+    marker.color.g = 0.
+    marker.color.b = 0.
+    marker.color.a = 1.
+    if seconds_left < 0.0 and seconds_left % 2.0 > 1.0:
+            marker.color.r = 1.
+    return marker
+
+
+def start_handler(req):
+    start_stamp = req.position.header.stamp.secs
+    timers_lock.acquire()
+    timers[str(start_stamp)] = CountdownTimer(start_stamp, req.seconds.data, req.position.point, req.position.header.frame_id)
+    timers_lock.release()
+    return StartCountdownResponse()
+
+
+if __name__ == "__main__":
+    rospy.init_node('countdown_timer_visualizer')
+    s = rospy.Service('start_countdown_timer', StartCountdown, start_handler)
+    countdown_labels_pub = rospy.Publisher("countdown_timers", MarkerArray, queue_size=10)
+    while not rospy.is_shutdown():
+        timers_lock.acquire()
+        valid_timers = {}
+        marker_array = MarkerArray()
+        for name, timer in timers.items():
+            marker_array.markers.append(timer.get_marker())
+            if not timer.finished():
+                valid_timers[name] = timer
+        timers = valid_timers
+        timers_lock.release()
+        countdown_labels_pub.publish(marker_array)

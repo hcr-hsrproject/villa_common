@@ -1,0 +1,52 @@
+#!/usr/bin/env python
+
+import os
+import sys
+import errno
+import argparse
+
+import rospy
+from villa_helpers.srv import PersistentLog, PersistentLogResponse
+
+# Villa Logger (heh)
+class VLogger(object):
+
+    def __init__(self, base_dir):
+        # Create base directory if need be
+        self.base_path = os.path.abspath(base_dir)
+        self.__mkdirp(self.base_path)
+
+    def log(self, req):
+        # Generate new sid if need be
+        sid = int(rospy.get_time()) if req.sid == 0 else req.sid
+
+        # Create logdir
+        path = os.path.join(self.base_path, req.producer, str(sid))
+        self.__mkdirp(path)
+
+        # Write to file
+        with open(os.path.join(path, 'data'), 'ab') as f:
+            f.write(req.data)
+
+        return PersistentLogResponse(sid)
+
+    def __mkdirp(self, path):
+        try:
+            os.makedirs(path)
+        except OSError as exception:
+            if exception.errno != errno.EEXIST:
+                raise
+
+
+def main():
+    parser = argparse.ArgumentParser(description='Villa Vlogger')
+    parser.add_argument('-l','--logdir', help='Path to log to', required=True)
+    args = parser.parse_args(rospy.myargv(argv=sys.argv)[1:])
+
+    rospy.init_node('villa_vlogger')
+    vlogger = VLogger(args.logdir)
+    s = rospy.Service('villa_vlogger', PersistentLog, vlogger.log)
+    rospy.spin()
+
+if __name__ == '__main__':
+    main()

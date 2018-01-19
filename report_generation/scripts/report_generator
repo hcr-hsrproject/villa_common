@@ -1,0 +1,219 @@
+#!/usr/bin/env python
+from __future__ import print_function
+import time
+import os.path
+import Image
+from PyPDF2 import PdfFileMerger, PdfFileWriter, PdfFileReader
+from sys import argv
+import cv2
+from cv_bridge import CvBridge, CvBridgeError
+import rospy
+from report_generation.srv import *
+from reportlab.pdfgen import canvas
+
+
+
+#text formatting
+point = 1
+inch = 72
+fileType = ".pdf"
+SAVE_PATH = ""
+
+FILE_NAME = ""
+SAVE_NAME = ""
+
+TEXT = """%s 
+    %s
+    Try %s"""
+
+SAVE_PATH
+SAVE_NAME
+FILE_NAME
+
+
+def convertImage(message):
+    bridge = CvBridge()
+    cv_image = bridge.imgmsg_to_cv2(message, desired_encoding="passthrough")
+    return cv_image
+
+def pdfString(title,words):
+    c = canvas.Canvas(title + ".pdf")
+    c.drawString(200,800,words)
+    c.showPage()
+    c.save()
+
+def ImageToPDF(image, name):
+    im = Image.open(image)
+    im.save(name + ".pdf", "PDF", resolution = 150.0)
+
+def StringOnImage(stringFile, imageFile, result):
+    output = PdfFileWriter()
+    input1 = PdfFileReader(open(stringFile + ".pdf", "rb"))
+
+    page4 = input1.getPage(0)
+    watermark = PdfFileReader(open(imageFile + ".pdf", "rb"))
+    page4.mergePage(watermark.getPage(0))
+    output.addPage(page4)
+
+    outputStream = file(result + ".pdf", "wb")
+    output.write(outputStream)    
+
+def mergePDFs(inputFile1,inputFile2, outputFile):
+    merger = PdfFileMerger()
+
+    input1 = open(inputFile1 + ".pdf", "rb")
+    input2 = open(inputFile2 + ".pdf", "rb")
+    merger.append(fileobj = input1)
+
+    # insert the first page of input2 into the output beginning after the second page
+    merger.append(fileobj=input2)
+    #merger.merge(position = 2, fileobj = input2, pages = (0,1))
+    #completeName = os.path.join(SAVE_NAME, FILE_NAME)
+   # input1.close()
+    output = open(outputFile + ".pdf", "wb")
+    merger.write(output)
+
+def mergeMultiplePDFs(initial, combinedName, outputName, items):
+    global FILE_NAME
+    current = initial
+    print(len(items))
+    for index in range(len(items)):
+        merger = PdfFileMerger()
+        input1 = open(current + ".pdf", "rb")
+        input2 = open(combinedName + str(index) + ".pdf", "rb")
+        merger.append(fileobj = input1)
+        merger.append(fileobj=input2)
+        output = open(outputName+ str(index)+ ".pdf", "wb")
+        merger.write(output)
+        current = outputName+str(index) 
+        print("pineapple")
+        input1.close()
+        input2.close()
+        merger.close()
+        output.close()
+    print(len(items))
+
+
+
+def basic_info(path, tryNum):
+    global SAVE_PATH, FILE_NAME, SAVE_NAME
+    try_num = tryNum
+    teamName = "Austin Villa"
+    FILE_NAME = teamName + "_" + str(try_num)
+    now = time.strftime("%c")
+    SAVE_PATH = path
+    completeName = os.path.join(SAVE_PATH, FILE_NAME + fileType)
+    SAVE_NAME = completeName
+    make_pdf_file("info"+ fileType,teamName, 1,now, str(try_num))
+
+
+def make_pdf_file(output_filename,name, np, date, tryNum):
+    title = output_filename
+    c = canvas.Canvas(output_filename, pagesize=(8.5 * inch, 11 * inch))
+    c.setStrokeColorRGB(0,0,0)
+    c.setFillColorRGB(0,0,0)
+    c.setFont("Helvetica", 12 * point)
+    for pn in range(1, np + 1):
+        v = 10 * inch
+        for subtline in (TEXT % (name, date, tryNum)).split( '\n' ):
+            c.drawString( 1 * inch, v, subtline )
+            v -= 12 * point
+        c.showPage()
+    c.save()
+
+#Information for team name, date, try number, and USB path
+
+
+def record_cupboard(req):
+    return True
+#convert req.cupboard_initial to normal image
+    #convertImage = convertImage(req)
+    convertImage = req
+    ImageToPDF(convertImage, "cupboard_initial")
+    mergePDFs("info","cupboard_initial", "initial")
+    '''
+    merger = PdfFileMerger()
+
+    input1 = open(FILE_NAME + ".pdf", "rb")
+    input2 = open("cupboard_initial.pdf", "rb")
+    merger.append(fileobj = input1, pages = (0,1))
+
+    # insert the first page of input2 into the output beginning after the second page
+    merger.merge(position = 2, fileobj = input2, pages = (0,1))
+    output = open(FILE_NAME  + ".pdf" , "wb")
+    merger.write(output)
+    '''
+
+
+## date and time representation
+
+#completeName = teamName
+'''
+file = open(completeName, 'w');
+
+file.write("Team Name: " + teamName + "\n")
+file.write("Try: " + str(try_num) + "\n")
+file.write("Date and time: " + time.strftime("%c"))
+
+file.close()
+'''
+
+def record_final_cupboard(req):
+    return True
+    #convert req.cupboard_final to standard image format
+    #finalCupboard = convertImage(end)
+    global FILE_NAME
+    finalCupboard = end
+    ImageToPDF(finalCupboard, "cupboard_final")
+#    merger = PdfFileMerger()
+
+    for image in range(len(req.items)):
+        label = req.item_names[image]
+        pdfString("label",label)
+
+        convertImage = req.items[image]                         #need to find way to convert sensor_msg/Image to image
+        ImageToPDF(convertImage,"item")
+
+        StringOnImage(label,item, "merge")
+        mergePDFs(FILE_NAME,"merge",FILE_NAME)
+
+        '''
+        merger = PdfFileMerger()
+        input1 = open(FILE_NAME + ".pdf", "rb")
+        input2 = open("merge.pdf", "rb")
+        merger.append(fileobj = input1)
+        # insert the first page of input2 into the output beginning after the second page
+        merger.merge(position = 2, fileobj = input2, pages = (0,1))
+        output = open(FILE_NAME  + ".pdf" , "wb")
+        merger.write(output)
+        '''
+    mergeMultiplePDFs("initial","labelledPic", "biggie", items)
+
+    #completeName = os.path.join(SAVE_PATH, FILE_NAME + fileType)
+    #SAVE_NAME = completeName
+
+    #mergePDFs("biggie"+str((len(items)-2)),"cupboard_final",SAVE_NAME)
+    merger = PdfFileMerger()
+
+    input1 = open("biggie"+str((len(items)-2)) + ".pdf", "rb")
+    input2 = open("cupboard_final.pdf", "rb")
+    merger.append(fileobj = input1)
+    merger.append(fileobj=input2)
+    output = open(SAVE_NAME, "wb")
+    merger.write(output)
+
+def main():
+    rospy.init_node('report_generator')
+    if not rospy.has_param("~output_path"):
+        rospy.logerr("You must specify an output directory")
+        exit(1)
+    target_dir = rospy.get_param("~output_path")
+    basic_info(target_dir, 1)
+
+    s = rospy.Service('record_cupboard', RecordCupboard, record_cupboard)
+    s2 = rospy.Service('record__final_cupboard', RecordFinalCupboard, record_final_cupboard)
+    rospy.spin()
+
+
+if __name__ == '__main__':
+    main()

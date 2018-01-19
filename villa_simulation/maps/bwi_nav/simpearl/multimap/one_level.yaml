@@ -1,0 +1,5 @@
+maps:
+    1stFloor:
+        yaml: package://villa_simulation/maps/bwi_nav/simpearl/3/map.yaml
+        origin: [0, 0, 0, 0, 0, 0]
+        data_directory: package://villa_simulation/maps/bwi_nav/simpearl/3

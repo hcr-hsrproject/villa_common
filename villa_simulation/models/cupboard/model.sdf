@@ -1,0 +1,438 @@
+<?xml version="1.0"?>
+<sdf version="1.4">
+    <model name="cupboard">
+        <!--<world name="default">
+        <mass>100000000000</mass>
+    </world-->
+    <link name="link">
+        <inertial>
+            <mass>10</mass>
+            <inertia>
+                <ixx>1</ixx>
+                <ixy>0</ixy>
+                <ixz>0</ixz>
+                <iyy>1</iyy>
+                <iyz>0</iyz>
+                <izz>1</izz>
+            </inertia>
+        </inertial>
+        <visual name="left_board">
+            <pose>-0.1475 -0.28 0.898 0 -0 0</pose>
+            <geometry>
+                <box>
+                    <size>0.295 0.018 1.796</size>
+                </box>
+            </geometry>
+            <material>
+                <script>
+                    <uri>model://base_materials/wood/scripts</uri>
+                    <uri>model://base_materials/wood/textures</uri>
+                    <name>base_materials/light_wood</name>
+                </script>
+            </material>
+        </visual>
+        <collision name="collision_left_board">
+            <pose>-0.1475 -0.28 0.898 0 -0 0</pose>
+            <geometry>
+                <box>
+                    <size>0.295 0.018 1.796</size>
+                </box>
+            </geometry>
+            <max_contacts>10</max_contacts>
+            <surface>
+                <bounce/>
+                <friction>
+                    <ode/>
+                </friction>
+                <contact>
+                    <ode/>
+                </contact>
+            </surface>
+        </collision>
+        <visual name="right_board">
+            <pose>-0.1475 0.721 0.898 0 -0 0</pose>
+            <geometry>
+                <box>
+                    <size>0.295 0.018 1.796</size>
+                </box>
+            </geometry>
+            <material>
+                <script>
+                    <uri>model://base_materials/wood/scripts</uri>
+                    <uri>model://base_materials/wood/textures</uri>
+                    <name>base_materials/light_wood</name>
+                </script>
+            </material>
+        </visual>
+        <collision name="collision_right_board">
+            <pose>-0.1475 0.721 0.898 0 -0 0</pose>
+            <geometry>
+                <box>
+                    <size>0.295 0.018 1.796</size>
+                </box>
+            </geometry>
+            <max_contacts>10</max_contacts>
+            <surface>
+                <bounce/>
+                <friction>
+                    <ode/>
+                </friction>
+                <contact>
+                    <ode/>
+                </contact>
+            </surface>
+        </collision>
+        <visual name="top_board">
+            <pose>-0.1475 0.225 1.7825 0 -0 0</pose>
+            <geometry>
+                <box>
+                    <size>0.295 1 0.035</size>
+                </box>
+            </geometry>
+            <material>
+                <script>
+                    <uri>model://base_materials/wood/scripts</uri>
+                    <uri>model://base_materials/wood/textures</uri>
+                    <name>base_materials/light_wood</name>
+                </script>
+            </material>
+        </visual>
+        <collision name="collision_top_board">
+            <pose>-0.1475 0.225 1.7825 0 -0 0</pose>
+            <geometry>
+                <box>
+                    <size>0.295 1 0.035</size>
+                </box>
+            </geometry>
+            <max_contacts>10</max_contacts>
+            <surface/>
+        </collision>
+        <visual name="1st_shelf">
+            <pose>-0.162 0.225 1.51 0 -0 0</pose>
+            <geometry>
+                <box>
+                    <size>0.266 1 0.018</size>
+                </box>
+            </geometry>
+            <material>
+                <script>
+                    <uri>model://base_materials/wood/scripts</uri>
+                    <uri>model://base_materials/wood/textures</uri>
+                    <name>base_materials/light_wood</name>
+                </script>
+            </material>
+        </visual>
+        <collision name="collision_1st_shelf">
+            <pose>-0.162 0.225 1.51 0 -0 0</pose>
+            <geometry>
+                <box>
+                    <size>0.266 1 0.018</size>
+                </box>
+            </geometry>
+            <max_contacts>10</max_contacts>
+            <surface/>
+        </collision>
+        <visual name="2nd_shelf">
+            <pose>-0.162 0.225 1.22 0 -0 0</pose>
+            <geometry>
+                <box>
+                    <size>0.266 1 0.018</size>
+                </box>
+            </geometry>
+            <material>
+                <script>
+                    <uri>model://base_materials/wood/scripts</uri>
+                    <uri>model://base_materials/wood/textures</uri>
+                    <name>base_materials/light_wood</name>
+                </script>
+            </material>
+        </visual>
+        <collision name="collision_2nd_shelf">
+            <pose>-0.162 0.225 1.22 0 -0 0</pose>
+            <geometry>
+                <box>
+                    <size>0.266 1 0.018</size>
+                </box>
+            </geometry>
+            <max_contacts>10</max_contacts>
+            <surface/>
+        </collision>
+        <visual name="3rd_shelf">
+            <pose>-0.162 0.225 0.93 0 -0 0</pose>
+            <geometry>
+                <box>
+                    <size>0.266 1 0.018</size>
+                </box>
+            </geometry>
+            <material>
+                <script>
+                    <uri>model://base_materials/wood/scripts</uri>
+                    <uri>model://base_materials/wood/textures</uri>
+                    <name>base_materials/light_wood</name>
+                </script>
+            </material>
+        </visual>
+        <collision name="collision_3rd_shelf">
+            <pose>-0.162 0.225 0.93 0 -0 0</pose>
+            <geometry>
+                <box>
+                    <size>0.266 1 0.018</size>
+                </box>
+            </geometry>
+            <max_contacts>10</max_contacts>
+            <surface/>
+        </collision>
+        <visual name="4th_shelf">
+            <pose>-0.162 0.225 0.65 0 -0 0</pose>
+            <geometry>
+                <box>
+                    <size>0.266 1 0.018</size>
+                </box>
+            </geometry>
+            <material>
+                <script>
+                    <uri>model://base_materials/wood/scripts</uri>
+                    <uri>model://base_materials/wood/textures</uri>
+                    <name>base_materials/light_wood</name>
+                </script>
+            </material>
+        </visual>
+        <collision name="collision_4th_shelf">
+            <pose>-0.162 0.225 0.65 0 -0 0</pose>
+            <geometry>
+                <box>
+                    <size>0.266 1 0.018</size>
+                </box>
+            </geometry>
+            <max_contacts>10</max_contacts>
+            <surface/>
+        </collision>
+        <visual name="5th_shelf">
+            <pose>-0.162 0.225 0.36 0 -0 0</pose>
+            <geometry>
+                <box>
+                    <size>0.266 1 0.018</size>
+                </box>
+            </geometry>
+            <material>
+                <script>
+                    <uri>model://base_materials/wood/scripts</uri>
+                    <uri>model://base_materials/wood/textures</uri>
+                    <name>base_materials/light_wood</name>
+                </script>
+            </material>
+        </visual>
+        <collision name="collision_5th_shelf">
+            <pose>-0.162 0.225 0.36 0 -0 0</pose>
+            <geometry>
+                <box>
+                    <size>0.266 1 0.018</size>
+                </box>
+            </geometry>
+            <max_contacts>10</max_contacts>
+            <surface/>
+        </collision>
+        <visual name="bottom_board">
+            <pose>-0.1475 0.225 0.035 0 -0 0</pose>
+            <geometry>
+                <box>
+                    <size>0.295 1 0.07</size>
+                </box>
+            </geometry>
+            <material>
+                <script>
+                    <uri>model://base_materials/wood/scripts</uri>
+                    <uri>model://base_materials/wood/textures</uri>
+                    <name>base_materials/light_wood</name>
+                </script>
+            </material>
+        </visual>
+        <collision name="collision_bottom_board">
+            <pose>-0.1475 0.225 0.035 0 -0 0</pose>
+            <geometry>
+                <box>
+                    <size>0.295 1 0.07</size>
+                </box>
+            </geometry>
+            <max_contacts>10</max_contacts>
+            <surface/>
+        </collision>
+        <visual name="back_board">
+            <pose>-0.286 0.225 0.898 0 -0 0</pose>
+            <geometry>
+                <box>
+                    <size>0.018 1 1.796</size>
+                </box>
+            </geometry>
+            <material>
+                <script>
+                    <uri>model://base_materials/wood/scripts</uri>
+                    <uri>model://base_materials/wood/textures</uri>
+                    <name>base_materials/light_wood</name>
+                </script>
+            </material>
+        </visual>
+        <collision name="collision_back_board">
+            <pose>-0.286 0.225 0.898 0 -0 0</pose>
+            <geometry>
+                <box>
+                    <size>0.018 1 1.796</size>
+                </box>
+            </geometry>
+            <max_contacts>10</max_contacts>
+            <surface/>
+        </collision>
+        <velocity_decay>
+            <linear>0</linear>
+            <angular>0</angular>
+        </velocity_decay>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <gravity>1</gravity>
+    </link>
+    <joint name="fixedlink" type="revolute">
+        <parent>default</parent>
+        <child>link</child>
+        <axis>
+            <xyz>1 0 0</xyz>
+            <limit>
+                <upper>0</upper>
+                <lower>0</lower>
+            </limit>
+        </axis>
+    </joint>
+    <joint name="fixed" type="revolute">
+        <parent>default</parent>
+        <child>link</child>
+        <axis>
+            <xyz>1 0 0</xyz>
+            <limit>
+                <upper>0</upper>
+                <lower>0</lower>
+            </limit>
+      </axis>
+    </joint>
+    <link name="hinge">
+        <inertial>
+            <pose>0.04 0.72 1.125 0 -0 0</pose>
+            <mass>0.01</mass>
+            <inertia>
+                <ixx>1</ixx>
+                <ixy>0</ixy>
+                <ixz>0</ixz>
+                <iyy>100</iyy>
+                <iyz>0</iyz>
+                <izz>1</izz>
+            </inertia>
+        </inertial>
+        <visual name="visual">
+            <pose>0.04 0.72 1.125 0 -0 0</pose>
+            <geometry>
+                <cylinder>
+                    <length>0.1</length>
+                    <radius>0.025</radius>
+                </cylinder>
+            </geometry>
+        </visual>
+        <gravity>0</gravity>
+    </link>
+    <joint name="door_hinge" type="fixed">
+        <parent>door</parent>
+        <child>hinge</child>
+        <axis>
+            <xyz>1 0 0</xyz>
+            <limit>
+                <upper>0</upper>
+                <lower>0</lower>
+            </limit>
+      </axis>
+    </joint>
+    <link name="door">
+        <inertial>
+            <pose>0.04 0.2 1.125 0 -0 0</pose>
+            <mass>1</mass>
+            <inertia>
+                <ixx>1</ixx>
+                <ixy>0</ixy>
+                <ixz>0</ixz>
+                <iyy>100</iyy>
+                <iyz>0</iyz>
+                <izz>1</izz>
+            </inertia>
+        </inertial>
+        <visual name="visual">
+            <pose>0.04 0.2 0.898 0 -0 1.57</pose>
+            <geometry>
+                <box>
+                    <size>1 0.01 1.796</size>
+                </box>
+            </geometry>
+        </visual>
+        <gravity>0</gravity>
+    </link>
+    <joint name="door_cupboard" type="revolute">
+        <parent>link</parent>
+        <child>door</child>
+        <pose>0 0.72 0 0 -0 0</pose>
+        <axis>
+            <xyz>0 0 1</xyz>
+            <limit>
+                <effort>15</effort>
+                <lower>0</lower>
+                <upper>1.57</upper>
+                <velocity>1</velocity>
+            </limit>
+
+        </axis>
+    </joint>
+    <pose>-0.016098 0.106002 -0.376993 0 -0 0</pose>
+    <!-- <model name='door_handle'> -->
+    <link name="handle">
+        <gravity>0</gravity>
+        <collision name="collision">
+            <geometry>
+                <mesh>
+                    <uri>model://door_handle/meshes/door_handle.dae</uri>
+                </mesh>
+            </geometry>
+        </collision>
+        <visual name="visual">
+            <geometry>
+                <mesh>
+                    <uri>model://door_handle/meshes/door_handle.dae</uri>
+                </mesh>
+            </geometry>
+        </visual>
+        <pose>0.0598 -0.106008 0.976993 1.58914 0.053231 1.57168</pose>
+    </link>
+    <!-- </model> -->
+    <joint name="door_JOINT_0" type="revolute">
+        <parent>door</parent>
+        <child>handle</child>
+        <pose>0 0 0 0 -0 0</pose>
+        <axis>
+            <xyz>1 0 0</xyz>
+            <limit>
+                <effort>15</effort>
+                <lower>-0.75</lower>
+                <upper>0.75</upper>
+                <velocity>1</velocity>
+            </limit>
+        </axis>
+        <physics>
+            <ode>
+                <limit>
+                    <cfm>0</cfm>
+                    <erp>0.2</erp>
+                </limit>
+                <suspension>
+                    <cfm>0</cfm>
+                    <erp>0.2</erp>
+                </suspension>
+            </ode>
+        </physics>
+    </joint>
+    <static>0</static>
+    <allow_auto_disable>1</allow_auto_disable>
+</model>
+</sdf>

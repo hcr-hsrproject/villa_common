@@ -1,0 +1,5 @@
+Header header
+geometry_msgs/Vector3 points_centroid
+geometry_msgs/Vector3 bb_center
+geometry_msgs/Vector3 bb_dims
+float64 distance
